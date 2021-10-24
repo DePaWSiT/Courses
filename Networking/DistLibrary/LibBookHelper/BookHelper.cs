@@ -45,11 +45,10 @@ namespace BookHelper
             Console.WriteLine("Waiting for connection::bookHelper");
 
             Socket libServerSocket = socket.Accept();
+            Console.WriteLine("Connection accepted");
 
             while (true)
             {
-                Console.WriteLine("Connection accepted");
-
                 //receive message from lib server
                 int b = libServerSocket.Receive(buffer);
                 data = Encoding.ASCII.GetString(buffer, 0, b);
@@ -57,11 +56,9 @@ namespace BookHelper
                 data = null;
 
                 //send to lib server
-                socket.Send(Encoding.ASCII.GetBytes("BookHelper message!"));
-                Console.WriteLine("Closing connection");
+                libServerSocket.Send(Encoding.ASCII.GetBytes("BookHelper message!"));
                 
-                
-                libServerSocket.Close();
+                //libServerSocket.Close();
             }
         }
     }

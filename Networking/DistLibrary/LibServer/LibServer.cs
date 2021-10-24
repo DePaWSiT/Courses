@@ -43,31 +43,38 @@ namespace LibServer
             IPEndPoint userHelperEndpoint = new IPEndPoint(IPAddress.Loopback, 11113);
             IPEndPoint bookHelperEndpoint = new IPEndPoint(IPAddress.Loopback, 11112);
             IPEndPoint libServerEndpoint = new IPEndPoint(IPAddress.Loopback, 11111);
-            Socket libToClientSocket = new Socket(libServerEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            Socket libSocket = new Socket(libServerEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            
+
+            //connecting with the user helper
+            Socket libToUHSocket = new Socket(libServerEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            libToUHSocket.Connect(userHelperEndpoint);
+            Console.WriteLine("Now connected to helper server:User");
+
+            
+            //connecting with the book helper
+            Socket libToBHSocket = new Socket(libServerEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            libToBHSocket.Connect(bookHelperEndpoint);
+            Console.WriteLine("Now connected to helper server:Book");
+
 
             //bind socket and wait for connection
-            libToClientSocket.Bind(libServerEndpoint);
-            libToClientSocket.Listen(5);
+            libSocket.Bind(libServerEndpoint);
+            libSocket.Listen(5);
             Console.WriteLine("Waiting for connection::LibServer");
 
-            //accept connection
-            Socket clientSocket = libToClientSocket.Accept();
+            //accept connection from client
+            Socket clientSocket = libSocket.Accept();
+            Console.WriteLine("Connection accepted from client");
             while (true)
             {
-                Console.WriteLine("Connection accepted from client");
-
                 //receive from client
                 int b = clientSocket.Receive(buffer);
                 data = Encoding.ASCII.GetString(buffer, 0, b);
                 Console.WriteLine($"The message sent was: {data}");
                 data = null;
                 
-                
-                Console.WriteLine("Now connecting to helper server:User");
 
-                //connecting with the user helper
-                Socket libToUHSocket = new Socket(libServerEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                libToUHSocket.Connect(userHelperEndpoint);
                 while (true)
                 {
                     //send to user helper
@@ -86,12 +93,6 @@ namespace LibServer
                
                 while (userDataFound)
                 {
-                    Console.WriteLine("Now connecting to helper server:Book");
-
-                    //connecting with the book helper
-                    Socket libToBHSocket = new Socket(libServerEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                    libToBHSocket.Connect(bookHelperEndpoint);
-
                     //send to book helper
                     libToBHSocket.Send(Encoding.ASCII.GetBytes("This message is from the library server"));
 
@@ -104,7 +105,8 @@ namespace LibServer
                     bookDataFound = true;
                     break;
                 }
-                break;
+                //send message back to client
+                clientSocket.Send(Encoding.ASCII.GetBytes("This message came from the library server"));
             }
         }
     }

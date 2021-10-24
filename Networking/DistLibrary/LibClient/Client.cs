@@ -98,6 +98,7 @@ namespace LibClient
                 {
                     //send
                     socket.Send(Encoding.ASCII.GetBytes(data));
+                    Console.WriteLine("message send");
 
                     //receive
                     int b = socket.Receive(buffer);
@@ -106,12 +107,9 @@ namespace LibClient
                     data = null;
                 }
                 
-                Console.WriteLine("Press a key to close window");
-                Console.ReadKey();
-                break;
+                //Console.WriteLine("Press a key to close window");
+                //Console.ReadKey();
             }
-
-
             return result;
         }
 
