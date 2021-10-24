@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.IO;
 using System.Collections.Generic;
 using LibData;
+using System.Text;
 
 namespace BookHelper
 {
@@ -31,6 +32,37 @@ namespace BookHelper
         public void start()
         {
             //todo: implement the body. Add extra fields and methods to the class if needed
+
+            byte[] buffer = new byte[1000];
+            string data = null;
+
+            IPEndPoint bookHelperEndpoint = new IPEndPoint(IPAddress.Loopback, 11112);
+            Socket socket = new Socket(bookHelperEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+
+            socket.Bind(bookHelperEndpoint);
+
+            socket.Listen(5);
+            Console.WriteLine("Waiting for connection::bookHelper");
+
+            Socket libServerSocket = socket.Accept();
+
+            while (true)
+            {
+                Console.WriteLine("Connection accepted");
+
+                //receive message from lib server
+                int b = libServerSocket.Receive(buffer);
+                data = Encoding.ASCII.GetString(buffer, 0, b);
+                Console.WriteLine(data);
+                data = null;
+
+                //send to lib server
+                socket.Send(Encoding.ASCII.GetBytes("BookHelper message!"));
+                Console.WriteLine("Closing connection");
+                
+                
+                libServerSocket.Close();
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.IO;
 using System.Collections.Generic;
 using LibData;
+using System.Text;
 
 namespace UserHelper
 {
@@ -31,6 +32,37 @@ namespace UserHelper
         public void start()
         {
             //todo: implement the body. Add extra fields and methods to the class if needed
+
+            byte[] buffer = new byte[1000];
+            string data = null;
+
+            IPEndPoint userHelperEndpoint = new IPEndPoint(IPAddress.Loopback, 11113);
+            Socket socket = new Socket(userHelperEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+
+            socket.Bind(userHelperEndpoint);
+
+            socket.Listen(5);
+            Console.WriteLine("Waiting for connection::UserHelper");
+
+            Socket libServerSocket = socket.Accept();
+
+            while (true)
+            {
+                Console.WriteLine("Connection accepted");
+
+                //receive from lib server
+                int b = libServerSocket.Receive(buffer);
+                data = Encoding.ASCII.GetString(buffer, 0, b);
+                Console.WriteLine(data);
+                data = null;
+
+                //send to lib server
+                socket.Send(Encoding.ASCII.GetBytes("Userhelper message!"));
+                Console.WriteLine("Closing connection");
+                
+                
+                libServerSocket.Close();
+            }
         }
     }
 }

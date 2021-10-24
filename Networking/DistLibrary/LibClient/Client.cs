@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text.Json;
 using LibData;
-
+using System.Text;
 
 namespace LibClient
 {
@@ -83,6 +83,34 @@ namespace LibClient
 
             // todo: implement the body to communicate with the server and requests the book. Return the result as an Output object.
             // Adding extra methods to the class is permitted. The signature of this method must not change.
+
+            byte[] buffer = new byte[1000];
+            string data = null;
+
+            IPEndPoint libServerEndpoint = new IPEndPoint(IPAddress.Loopback, 11111);
+            Socket socket = new Socket(libServerEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            socket.Connect(libServerEndpoint);
+            while (true)
+            {
+                Console.WriteLine("Write message for the server");
+                data = Console.ReadLine();
+                if (data.Length != 0)
+                {
+                    //send
+                    socket.Send(Encoding.ASCII.GetBytes(data));
+
+                    //receive
+                    int b = socket.Receive(buffer);
+                    data = Encoding.ASCII.GetString(buffer, 0, b);
+                    Console.WriteLine(data);
+                    data = null;
+                }
+                
+                Console.WriteLine("Press a key to close window");
+                Console.ReadKey();
+                break;
+            }
+
 
             return result;
         }
