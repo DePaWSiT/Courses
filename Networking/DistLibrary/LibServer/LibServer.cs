@@ -35,9 +35,12 @@ namespace LibServer
 
 
             byte[] buffer = new byte[1000];
-            string data = null;
-            bool userDataFound = false;
-            bool bookDataFound = false;
+            Message msgIn = new Message();
+            Message msgOut = new Message()
+            {
+                Type = MessageType.Welcome,
+                Content = "",
+            };
 
 
             IPEndPoint userHelperEndpoint = new IPEndPoint(IPAddress.Loopback, 11113);
@@ -45,7 +48,7 @@ namespace LibServer
             IPEndPoint libServerEndpoint = new IPEndPoint(IPAddress.Loopback, 11111);
             Socket libSocket = new Socket(libServerEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             
-
+            #region Connecting
             //connecting with the user helper
             Socket libToUHSocket = new Socket(libServerEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             libToUHSocket.Connect(userHelperEndpoint);
@@ -66,7 +69,23 @@ namespace LibServer
             //accept connection from client
             Socket clientSocket = libSocket.Accept();
             Console.WriteLine("Connection accepted from client");
-            while (true)
+            #endregion
+
+            //receiving first message from client
+            int b = clientSocket.Receive(buffer);
+            msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
+
+            //send welcome message to client
+            clientSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+
+            //forwarding book request to bookHelperServer
+            _ = clientSocket.Receive(buffer);
+            libToBHSocket.Send(buffer);
+
+            //forwarding book info from bookHelperServer to client
+            _ = libToBHSocket.Receive(buffer);
+            clientSocket.Send(buffer);
+            /**while (true)
             {
                 //receive from client
                 int b = clientSocket.Receive(buffer);
@@ -107,7 +126,9 @@ namespace LibServer
                 }
                 //send message back to client
                 clientSocket.Send(Encoding.ASCII.GetBytes("This message came from the library server"));
+            
             }
+            **/
         }
     }
 

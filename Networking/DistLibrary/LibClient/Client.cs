@@ -5,6 +5,7 @@ using System.Net;
 using System.Text.Json;
 using LibData;
 using System.Text;
+using System.Collections.Generic;
 
 namespace LibClient
 {
@@ -83,25 +84,68 @@ namespace LibClient
 
             // todo: implement the body to communicate with the server and requests the book. Return the result as an Output object.
             // Adding extra methods to the class is permitted. The signature of this method must not change.
-
+            
             byte[] buffer = new byte[1000];
-            string data = null;
+            List<string> bookTitles = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(@"LibInput.json"));
+            Message msgIn = new Message();
+            Message msgOut = new Message()
+            {
+                Type = MessageType.Hello,
+                Content = client_id.ToString(),
+            };
 
+            //making connection with server
             IPEndPoint libServerEndpoint = new IPEndPoint(IPAddress.Loopback, 11111);
             Socket socket = new Socket(libServerEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             socket.Connect(libServerEndpoint);
-            while (true)
+
+            //sending first message
+            socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+
+            //receiving first message from server
+            int b = socket.Receive(buffer);
+            msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
+
+            //sending bookinquiry
+            msgOut.Type = MessageType.BookInquiry;
+            msgOut.Content = bookName;
+            socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+
+            //receiving bookinfo from server
+            b = socket.Receive(buffer);
+            msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
+            
+            //determining if there is a book
+            if (msgIn.Content == "")
+            {
+                return result;
+            }
+            
+            BookData bookData = JsonSerializer.Deserialize<BookData>(msgIn.Content);
+
+            //when the book is availible
+            if (bookData.Status == "Availible")
+            {
+                result.Client_id = client_id;
+                result.BookName = bookData.Title;
+                result.Status = bookData.Status;
+                result.BorrowerName = null;
+                result.BorrowerEmail = null;
+                return result;
+            }
+
+            /**while (true)
             {
                 Console.WriteLine("Write message for the server");
                 data = Console.ReadLine();
                 if (data.Length != 0)
                 {
                     //send
-                    socket.Send(Encoding.ASCII.GetBytes(data));
+                    //socket.Send(Encoding.ASCII.GetBytes(data));
                     Console.WriteLine("message send");
 
                     //receive
-                    int b = socket.Receive(buffer);
+                    b = socket.Receive(buffer);
                     data = Encoding.ASCII.GetString(buffer, 0, b);
                     Console.WriteLine(data);
                     data = null;
@@ -109,7 +153,8 @@ namespace LibClient
                 
                 //Console.WriteLine("Press a key to close window");
                 //Console.ReadKey();
-            }
+            }**/
+
             return result;
         }
 

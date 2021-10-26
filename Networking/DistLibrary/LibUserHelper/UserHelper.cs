@@ -36,11 +36,15 @@ namespace UserHelper
             byte[] buffer = new byte[1000];
             string data = null;
 
+            //opens and stores Users from Users.json
+            List<UserData> usersContent = JsonSerializer.Deserialize<List<UserData>>(File.ReadAllText(@"Users.json"));
+            
+            //makes socket
             IPEndPoint userHelperEndpoint = new IPEndPoint(IPAddress.Loopback, 11113);
             Socket socket = new Socket(userHelperEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
+            //binds socket and puts it in listen state
             socket.Bind(userHelperEndpoint);
-
             socket.Listen(5);
             Console.WriteLine("Waiting for connection::UserHelper");
 
