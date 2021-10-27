@@ -31,10 +31,11 @@ namespace UserHelper
 
         public void start()
         {
-            //todo: implement the body. Add extra fields and methods to the class if needed
+            Setting settings = JsonSerializer.Deserialize<Setting>(File.ReadAllText(@"../ClientServerConfig.json"));
 
             byte[] buffer = new byte[1000];
-            string data = null;
+            Message msgIn = new Message();
+            Message msgOut = new Message();
 
             //opens and stores Users from Users.json
             List<UserData> usersContent = JsonSerializer.Deserialize<List<UserData>>(File.ReadAllText(@"Users.json"));
@@ -50,20 +51,6 @@ namespace UserHelper
 
             Socket libServerSocket = socket.Accept();
             Console.WriteLine("Connection accepted");
-
-            while (true)
-            {
-                //receive from lib server
-                int b = libServerSocket.Receive(buffer);
-                data = Encoding.ASCII.GetString(buffer, 0, b);
-                Console.WriteLine(data);
-                data = null;
-
-                //send to lib server
-                libServerSocket.Send(Encoding.ASCII.GetBytes("Userhelper message!"));
-                
-                //libServerSocket.Close();
-            }
         }
     }
 }

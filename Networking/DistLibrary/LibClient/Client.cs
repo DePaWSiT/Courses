@@ -84,9 +84,11 @@ namespace LibClient
 
             // todo: implement the body to communicate with the server and requests the book. Return the result as an Output object.
             // Adding extra methods to the class is permitted. The signature of this method must not change.
+            Setting settings = JsonSerializer.Deserialize<Setting>(File.ReadAllText(@"../ClientServerConfig.json"));
             
+            Console.WriteLine($"{client_id} {bookName}");
+
             byte[] buffer = new byte[1000];
-            List<string> bookTitles = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(@"LibInput.json"));
             Message msgIn = new Message();
             Message msgOut = new Message()
             {
@@ -101,23 +103,32 @@ namespace LibClient
 
             //sending first message
             socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+            Console.WriteLine("Sending first message to server");
 
             //receiving first message from server
             int b = socket.Receive(buffer);
             msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
+            Console.WriteLine("receiving welcome from server");
 
             //sending bookinquiry
             msgOut.Type = MessageType.BookInquiry;
             msgOut.Content = bookName;
             socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+            Console.WriteLine("Sending first inquiry to server");
 
             //receiving bookinfo from server
             b = socket.Receive(buffer);
             msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
+            Console.WriteLine("Receiving information from server");
             
-            //determining if there is a book
+            //when no book was found
             if (msgIn.Content == "")
             {
+                result.Client_id = client_id;
+                result.BookName = bookName;
+                result.Status = "NotFound";
+                result.BorrowerName = null;
+                result.BorrowerEmail = null;
                 return result;
             }
             
@@ -131,30 +142,16 @@ namespace LibClient
                 result.Status = bookData.Status;
                 result.BorrowerName = null;
                 result.BorrowerEmail = null;
+                Console.WriteLine($"{client_id}\n{bookData.Title}\n{bookData.Status}\n{result.BorrowerName}\n{result.BorrowerEmail}");
+                Console.ReadKey();
                 return result;
             }
 
-            /**while (true)
+            //when the book is borrowed
+            if (bookData.Status == "Borrowed")
             {
-                Console.WriteLine("Write message for the server");
-                data = Console.ReadLine();
-                if (data.Length != 0)
-                {
-                    //send
-                    //socket.Send(Encoding.ASCII.GetBytes(data));
-                    Console.WriteLine("message send");
 
-                    //receive
-                    b = socket.Receive(buffer);
-                    data = Encoding.ASCII.GetString(buffer, 0, b);
-                    Console.WriteLine(data);
-                    data = null;
-                }
-                
-                //Console.WriteLine("Press a key to close window");
-                //Console.ReadKey();
-            }**/
-
+            }
             return result;
         }
 

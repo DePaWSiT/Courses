@@ -31,11 +31,14 @@ namespace BookHelper
 
         public void start()
         {
-            //todo: implement the body. Add extra fields and methods to the class if needed
+            Setting settings = JsonSerializer.Deserialize<Setting>(File.ReadAllText(@"../ClientServerConfig.json"));
 
             byte[] buffer = new byte[1000];
             Message msgIn = new Message();
             Message msgOut = new Message();
+
+            msgIn.Type = MessageType.Hello;
+            msgIn.Content = "dankus memecus";
 
             //opens and stores Books from Books.json
             List<BookData> bookContent = JsonSerializer.Deserialize<List<BookData>>(File.ReadAllText(@"Books.json"));
@@ -54,7 +57,10 @@ namespace BookHelper
 
             //receiving forwarded bookinquiry from server
             int b = libServerSocket.Receive(buffer);
-            msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
+            string content = Encoding.ASCII.GetString(buffer, 0, b);
+            Console.WriteLine(content);
+            msgIn = JsonSerializer.Deserialize<Message>(content);
+            Console.WriteLine("Receiving inquiry from server");
 
             //searching for the book and sends book info back when found
             bool bookFound = false;
@@ -63,10 +69,13 @@ namespace BookHelper
                 
                 if (bookContent[i].Title == msgIn.Content)
                 {
+                    Console.WriteLine(msgOut.Content);
                     msgOut.Type = MessageType.BookInquiryReply;
                     msgOut.Content = JsonSerializer.Serialize(bookContent[i]);
                     libServerSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+                    
                     bookFound = true;
+                    Console.WriteLine(bookFound);
                     break;
                 }
             }
@@ -77,20 +86,6 @@ namespace BookHelper
                 msgOut.Content = "";
                 libServerSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
             }
-
-            /**while (true)
-            {
-                //receive message from lib server
-                int b = libServerSocket.Receive(buffer);
-                data = Encoding.ASCII.GetString(buffer, 0, b);
-                Console.WriteLine(data);
-                data = null;
-
-                //send to lib server
-                libServerSocket.Send(Encoding.ASCII.GetBytes("BookHelper message!"));
-                
-                //libServerSocket.Close();
-            }**/
         }
     }
 }

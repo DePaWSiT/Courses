@@ -31,8 +31,7 @@ namespace LibServer
 
         public void start()
         {
-            //todo: implement the body. Add extra fields and methods to the class if it is needed
-
+            Setting settings = JsonSerializer.Deserialize<Setting>(File.ReadAllText(@"../ClientServerConfig.json"));
 
             byte[] buffer = new byte[1000];
             Message msgIn = new Message();
@@ -48,7 +47,7 @@ namespace LibServer
             IPEndPoint libServerEndpoint = new IPEndPoint(IPAddress.Loopback, 11111);
             Socket libSocket = new Socket(libServerEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             
-            #region Connecting
+            #region Connections
             //connecting with the user helper
             Socket libToUHSocket = new Socket(libServerEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             libToUHSocket.Connect(userHelperEndpoint);
@@ -74,61 +73,32 @@ namespace LibServer
             //receiving first message from client
             int b = clientSocket.Receive(buffer);
             msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
+            Console.WriteLine("receiving first message from client");
 
             //send welcome message to client
             clientSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+            Console.WriteLine("sending back welcome message");
 
             //forwarding book request to bookHelperServer
-            _ = clientSocket.Receive(buffer);
-            libToBHSocket.Send(buffer);
-
-            //forwarding book info from bookHelperServer to client
-            _ = libToBHSocket.Receive(buffer);
-            clientSocket.Send(buffer);
-            /**while (true)
-            {
-                //receive from client
-                int b = clientSocket.Receive(buffer);
-                data = Encoding.ASCII.GetString(buffer, 0, b);
-                Console.WriteLine($"The message sent was: {data}");
-                data = null;
-                
-
-                while (true)
-                {
-                    //send to user helper
-                    libToUHSocket.Send(Encoding.ASCII.GetBytes("This message is from the library server"));
-
-                    //receive from user helper
-                    b = libToUHSocket.Receive(buffer);
-                    data = Encoding.ASCII.GetString(buffer, 0, b);
-                    Console.WriteLine($"The message from the user server was {data}");
-                    data = null;
-
-
-                    userDataFound = true;
-                    break;
-                }
-               
-                while (userDataFound)
-                {
-                    //send to book helper
-                    libToBHSocket.Send(Encoding.ASCII.GetBytes("This message is from the library server"));
-
-                    //receive from book helper
-                    b = libToBHSocket.Receive(buffer);
-                    data = Encoding.ASCII.GetString(buffer, 0, b);
-                    Console.WriteLine($"The message from the book server was {data}");
-                    data = null;
-
-                    bookDataFound = true;
-                    break;
-                }
-                //send message back to client
-                clientSocket.Send(Encoding.ASCII.GetBytes("This message came from the library server"));
+            Forwarding(clientSocket, libToBHSocket, buffer);
+            Console.WriteLine("forwarding book inquiry to book helper");
             
-            }
-            **/
+
+            //repacking message from bookHelper and sending to client
+            Forwarding(libToBHSocket, clientSocket, buffer);
+            Console.WriteLine("forwarding bookinfo from the helper to the client");
+        }
+
+        private void Forwarding(Socket origin, Socket destination, byte[] buffer)
+        {
+            int b = origin.Receive(buffer);
+            Message msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
+            Message msgOut = new Message()
+            {
+                Type = msgIn.Type,
+                Content = msgIn.Content
+            };
+            destination.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
         }
     }
 
