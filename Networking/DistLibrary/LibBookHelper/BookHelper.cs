@@ -55,35 +55,44 @@ namespace BookHelper
             Socket libServerSocket = socket.Accept();
             Console.WriteLine("Connection accepted");
 
-            //receiving forwarded bookinquiry from server
-            int b = libServerSocket.Receive(buffer);
-            string content = Encoding.ASCII.GetString(buffer, 0, b);
-            Console.WriteLine(content);
-            msgIn = JsonSerializer.Deserialize<Message>(content);
-            Console.WriteLine("Receiving inquiry from server");
+            while (true)
+            {
+                //receiving forwarded bookinquiry from server
+                int b = libServerSocket.Receive(buffer);
+                msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
+                Console.WriteLine("Receiving inquiry from server");
 
-            //searching for the book and sends book info back when found
-            bool bookFound = false;
-            for (int i = 0; i < bookContent.Count; i++)
-            {
-                
-                if (bookContent[i].Title == msgIn.Content)
+                if (msgIn.Type == MessageType.EndCommunication)
                 {
-                    msgOut.Type = MessageType.BookInquiryReply;
-                    msgOut.Content = JsonSerializer.Serialize(bookContent[i]);
-                    libServerSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
-                    
-                    bookFound = true;
-                    Console.WriteLine(bookFound);
-                    break;
+                    Console.WriteLine("Goodbye");
+                    socket.Close();
                 }
-            }
-            //scenario for when book cannot be found
-            if (!bookFound)
-            {
-                msgOut.Type = MessageType.NotFound;
-                msgOut.Content = "NotFound";
-                libServerSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+                else
+                {
+                    //searching for the book and sends book info back when found
+                    bool bookFound = false;
+                    for (int i = 0; i < bookContent.Count; i++)
+                    {
+
+                        if (bookContent[i].Title == msgIn.Content)
+                        {
+                            msgOut.Type = MessageType.BookInquiryReply;
+                            msgOut.Content = JsonSerializer.Serialize(bookContent[i]);
+                            libServerSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+
+                            bookFound = true;
+                            Console.WriteLine(bookFound);
+                            break;
+                        }
+                    }
+                    //scenario for when book cannot be found
+                    if (!bookFound)
+                    {
+                        msgOut.Type = MessageType.NotFound;
+                        msgOut.Content = "NotFound";
+                        libServerSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+                    }
+                }
             }
         }
     }

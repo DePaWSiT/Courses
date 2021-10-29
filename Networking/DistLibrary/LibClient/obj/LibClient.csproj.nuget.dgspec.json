@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\simon\\Source\\Repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibClient\\LibClient.csproj": {}
+    "C:\\Users\\simon\\source\\repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibClient\\LibClient.csproj": {}
   },
   "projects": {
-    "C:\\Users\\simon\\Source\\Repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibClient\\LibClient.csproj": {
+    "C:\\Users\\simon\\source\\repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibClient\\LibClient.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\simon\\Source\\Repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibClient\\LibClient.csproj",
+        "projectUniqueName": "C:\\Users\\simon\\source\\repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibClient\\LibClient.csproj",
         "projectName": "LibClient",
-        "projectPath": "C:\\Users\\simon\\Source\\Repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibClient\\LibClient.csproj",
+        "projectPath": "C:\\Users\\simon\\source\\repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibClient\\LibClient.csproj",
         "packagesPath": "C:\\Users\\simon\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\simon\\Source\\Repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibClient\\obj\\",
+        "outputPath": "C:\\Users\\simon\\source\\repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibClient\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

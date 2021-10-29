@@ -111,9 +111,16 @@ namespace LibServer
                 if (msgIn.Type == MessageType.EndCommunication)
                 {
                     //end communcation from server
-
+                    Forwarding(libToBHSocket, msgIn, buffer);
+                    Forwarding(libToUHSocket, msgIn, buffer);
+                    Forwarding(clientSocket, msgIn, buffer);
+                    libToBHSocket.Close();
+                    libToUHSocket.Close();
+                    clientSocket.Close();
+                    break;
                 }
-            }  
+            }
+            libSocket.Close();
         }
 
         private void Forwarding(Socket destination, Message msgIn, byte[] buffer)

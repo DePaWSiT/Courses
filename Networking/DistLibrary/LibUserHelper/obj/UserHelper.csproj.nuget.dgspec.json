@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\simon\\Source\\Repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibUserHelper\\UserHelper.csproj": {}
+    "C:\\Users\\simon\\source\\repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibUserHelper\\UserHelper.csproj": {}
   },
   "projects": {
-    "C:\\Users\\simon\\Source\\Repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibUserHelper\\UserHelper.csproj": {
+    "C:\\Users\\simon\\source\\repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibUserHelper\\UserHelper.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\simon\\Source\\Repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibUserHelper\\UserHelper.csproj",
+        "projectUniqueName": "C:\\Users\\simon\\source\\repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibUserHelper\\UserHelper.csproj",
         "projectName": "UserHelper",
-        "projectPath": "C:\\Users\\simon\\Source\\Repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibUserHelper\\UserHelper.csproj",
+        "projectPath": "C:\\Users\\simon\\source\\repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibUserHelper\\UserHelper.csproj",
         "packagesPath": "C:\\Users\\simon\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\simon\\Source\\Repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibUserHelper\\obj\\",
+        "outputPath": "C:\\Users\\simon\\source\\repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibUserHelper\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

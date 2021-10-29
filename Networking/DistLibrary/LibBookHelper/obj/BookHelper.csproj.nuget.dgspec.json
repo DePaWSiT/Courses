@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\simon\\Source\\Repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibBookHelper\\BookHelper.csproj": {}
+    "C:\\Users\\simon\\source\\repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibBookHelper\\BookHelper.csproj": {}
   },
   "projects": {
-    "C:\\Users\\simon\\Source\\Repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibBookHelper\\BookHelper.csproj": {
+    "C:\\Users\\simon\\source\\repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibBookHelper\\BookHelper.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\simon\\Source\\Repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibBookHelper\\BookHelper.csproj",
+        "projectUniqueName": "C:\\Users\\simon\\source\\repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibBookHelper\\BookHelper.csproj",
         "projectName": "BookHelper",
-        "projectPath": "C:\\Users\\simon\\Source\\Repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibBookHelper\\BookHelper.csproj",
+        "projectPath": "C:\\Users\\simon\\source\\repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibBookHelper\\BookHelper.csproj",
         "packagesPath": "C:\\Users\\simon\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\simon\\Source\\Repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibBookHelper\\obj\\",
+        "outputPath": "C:\\Users\\simon\\source\\repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibBookHelper\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

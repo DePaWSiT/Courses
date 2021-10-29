@@ -51,24 +51,42 @@ namespace UserHelper
 
             Socket libServerSocket = socket.Accept();
             Console.WriteLine("Connection accepted");
+            
 
-            //receive message from server
-            //receiving forwarded bookinquiry from server
-            int b = libServerSocket.Receive(buffer);
-            string content = Encoding.ASCII.GetString(buffer, 0, b);
-            Console.WriteLine(content);
-            msgIn = JsonSerializer.Deserialize<Message>(content);
-            Console.WriteLine("Receiving inquiry from server");
-
-            for (int i = 0; i < usersContent.Count; i++)
+            while (true)
             {
-                if (usersContent[i].User_id == msgIn.Content)
+                //receiving forwarded bookinquiry from server
+                int b = libServerSocket.Receive(buffer);
+                msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
+                Console.WriteLine("Receiving inquiry from server");
+
+                if (msgIn.Type == MessageType.EndCommunication)
                 {
-                    msgOut.Type = MessageType.UserInquiryReply;
-                    msgOut.Content = JsonSerializer.Serialize(usersContent[i]);
-                    socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
-                    Console.WriteLine("User found, send to server");
-                    break;
+                    Console.WriteLine("Goodbye");
+                    socket.Close();
+                }
+                else
+                {
+                    bool userFound = false;
+                    for (int i = 0; i < usersContent.Count; i++)
+                    {
+                        if (usersContent[i].User_id == msgIn.Content)
+                        {
+                            msgOut.Type = MessageType.UserInquiryReply;
+                            msgOut.Content = JsonSerializer.Serialize(usersContent[i]);
+                            userFound = true;
+                            socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+                            Console.WriteLine("User found, send to server");
+                            break;
+                        }
+                    }
+                    if (userFound)
+                    {
+                        msgOut.Type = MessageType.NotFound;
+                        msgOut.Content = "NotFound";
+                        socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+                        Console.WriteLine("User NOT found, send to server");
+                    }
                 }
             }
         }

@@ -3,8 +3,9 @@
     "",
     "\\Networking",
     "\\Networking\\DistLibrary",
-    "\\Networking\\DistLibrary\\LibClient"
+    "\\Networking\\DistLibrary\\LibClient",
+    "\\Networking\\DistLibrary\\LibServer"
   ],
-  "SelectedNode": "\\Networking\\DistLibrary\\LibClient\\Client.cs",
+  "SelectedNode": "\\Networking\\DistLibrary\\LibServer\\LibServer.cs",
   "PreviewInSolutionExplorer": false
 }

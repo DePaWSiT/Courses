@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "PxAT4afGDGyrkOG+eHrpq71EiQocP0GIdyw9YBz2JykDWsXrxe7FZdbKFDOOIDW4uv3wh9JeTnF7klUFYXJG4A==",
+  "dgSpecHash": "Cm1dGy/Tg2ok5fUxlh18UWNSdcQHag30TXUTUteWTnZTJYUWEnOZRxGfsEreIaZ71e5LWxCGOipzdxj4h6mNXQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\simon\\Source\\Repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibClient\\LibClient.csproj",
+  "projectFilePath": "C:\\Users\\simon\\source\\repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibClient\\LibClient.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

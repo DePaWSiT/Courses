@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Qnr4ozAJ7xbGTtHxT2gPfyM6UPU7yIl/WDLXpmgqNNpFCmqIO+zLARFnkSkhPxq1RGOAOnuwANIEWSaj+6gY4Q==",
+  "dgSpecHash": "VFSJ5+DhUAU707f2xYKD90rrANApqAoyS3gYrL0WWb1YhJ7xvfp+LSAPLylaKaZXW8UkB4RYWrmyAvjoP6Qk9w==",
   "success": true,
-  "projectFilePath": "C:\\Users\\simon\\Source\\Repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibBookHelper\\BookHelper.csproj",
+  "projectFilePath": "C:\\Users\\simon\\source\\repos\\DePaWSiT\\Courses\\Networking\\DistLibrary\\LibBookHelper\\BookHelper.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

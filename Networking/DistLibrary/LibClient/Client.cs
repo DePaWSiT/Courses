@@ -133,6 +133,7 @@ namespace LibClient
             }
             
             BookData bookData = JsonSerializer.Deserialize<BookData>(msgIn.Content);
+            Console.WriteLine(bookData.Status);
 
             //when the book is availible
             if (bookData.Status == "Availible")
@@ -176,6 +177,11 @@ namespace LibClient
                 msgOut.Type = MessageType.EndCommunication;
                 msgOut.Content = "";
                 socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+
+                b = socket.Receive(buffer);
+                msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
+                Console.WriteLine("Closing socket::Server");
+                socket.Close();
             }
 
             return result;
