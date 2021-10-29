@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Networking",
+    "\\Networking\\DistLibrary",
+    "\\Networking\\DistLibrary\\LibClient"
   ],
-  "SelectedNode": "\\DistLibrary.sln",
+  "SelectedNode": "\\Networking\\DistLibrary\\LibClient\\Client.cs",
   "PreviewInSolutionExplorer": false
 }

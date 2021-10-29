@@ -79,32 +79,45 @@ namespace LibServer
             clientSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
             Console.WriteLine("sending back welcome message");
 
-            //forwarding book request to bookHelperServer
-            Forwarding(clientSocket, libToBHSocket, buffer);
-            Console.WriteLine("forwarding book inquiry to book helper");
-            
+            while (true)
+            {
+                b = clientSocket.Receive(buffer);
+                msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
+                
+                //forwarding book request to bookHelperServer
+                if (msgIn.Type == MessageType.BookInquiry)
+                {
+                    Forwarding(libToBHSocket, msgIn, buffer);
+                    Console.WriteLine("forwarding book inquiry to book helper");
 
-            //repacking message from bookHelper and sending to client
-            Forwarding(libToBHSocket, clientSocket, buffer);
-            Console.WriteLine("forwarding bookinfo from the helper to the client");
+                    //repacking message from bookHelper and sending to client
+                    Forwarding(clientSocket, msgIn, buffer);
+                    Console.WriteLine("forwarding bookinfo from the helper to the client");
+                }
 
-            //repacking message and forwarding to userhelper
-            Forwarding(clientSocket, libToUHSocket, buffer);
-            Console.WriteLine("forwarding userID to userhelper");
+                //forwarding user request to userHelperServer
+                if (msgIn.Type == MessageType.UserInquiry)
+                {
+                    //repacking message and forwarding to userhelper
+                    Forwarding(libToUHSocket, msgIn, buffer);
+                    Console.WriteLine("forwarding userID to userhelper");
 
-            //repacking message from userHelpler and sending to client
-            Forwarding(libToUHSocket, clientSocket, buffer);
-            Console.WriteLine("forwarding user information from helper to client");
+                    //repacking message from userHelpler and sending to client
+                    Forwarding(clientSocket, msgIn, buffer);
+                    Console.WriteLine("forwarding user information from helper to client");
+                }
 
-            //end communcation from server
-            b = clientSocket.Receive(buffer);
-            msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
+                //ending command
+                if (msgIn.Type == MessageType.EndCommunication)
+                {
+                    //end communcation from server
+
+                }
+            }  
         }
 
-        private void Forwarding(Socket origin, Socket destination, byte[] buffer)
+        private void Forwarding(Socket destination, Message msgIn, byte[] buffer)
         {
-            int b = origin.Receive(buffer);
-            Message msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
             Message msgOut = new Message()
             {
                 Type = msgIn.Type,
