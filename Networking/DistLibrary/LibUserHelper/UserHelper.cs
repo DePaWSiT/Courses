@@ -51,6 +51,26 @@ namespace UserHelper
 
             Socket libServerSocket = socket.Accept();
             Console.WriteLine("Connection accepted");
+
+            //receive message from server
+            //receiving forwarded bookinquiry from server
+            int b = libServerSocket.Receive(buffer);
+            string content = Encoding.ASCII.GetString(buffer, 0, b);
+            Console.WriteLine(content);
+            msgIn = JsonSerializer.Deserialize<Message>(content);
+            Console.WriteLine("Receiving inquiry from server");
+
+            for (int i = 0; i < usersContent.Count; i++)
+            {
+                if (usersContent[i].User_id == msgIn.Content)
+                {
+                    msgOut.Type = MessageType.UserInquiryReply;
+                    msgOut.Content = JsonSerializer.Serialize(usersContent[i]);
+                    socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+                    Console.WriteLine("User found, send to server");
+                    break;
+                }
+            }
         }
     }
 }

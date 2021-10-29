@@ -87,6 +87,18 @@ namespace LibServer
             //repacking message from bookHelper and sending to client
             Forwarding(libToBHSocket, clientSocket, buffer);
             Console.WriteLine("forwarding bookinfo from the helper to the client");
+
+            //repacking message and forwarding to userhelper
+            Forwarding(clientSocket, libToUHSocket, buffer);
+            Console.WriteLine("forwarding userID to userhelper");
+
+            //repacking message from userHelpler and sending to client
+            Forwarding(libToUHSocket, clientSocket, buffer);
+            Console.WriteLine("forwarding user information from helper to client");
+
+            //end communcation from server
+            b = clientSocket.Receive(buffer);
+            msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
         }
 
         private void Forwarding(Socket origin, Socket destination, byte[] buffer)

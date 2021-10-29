@@ -69,7 +69,6 @@ namespace BookHelper
                 
                 if (bookContent[i].Title == msgIn.Content)
                 {
-                    Console.WriteLine(msgOut.Content);
                     msgOut.Type = MessageType.BookInquiryReply;
                     msgOut.Content = JsonSerializer.Serialize(bookContent[i]);
                     libServerSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
@@ -82,7 +81,7 @@ namespace BookHelper
             //scenario for when book cannot be found
             if (!bookFound)
             {
-                msgOut.Type = MessageType.BookInquiryReply;
+                msgOut.Type = MessageType.NotFound;
                 msgOut.Content = "NotFound";
                 libServerSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
             }
