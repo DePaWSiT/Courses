@@ -83,7 +83,7 @@ namespace BookHelper
             if (!bookFound)
             {
                 msgOut.Type = MessageType.BookInquiryReply;
-                msgOut.Content = "";
+                msgOut.Content = "NotFound";
                 libServerSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
             }
         }

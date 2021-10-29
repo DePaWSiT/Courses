@@ -122,7 +122,7 @@ namespace LibClient
             Console.WriteLine("Receiving information from server");
             
             //when no book was found
-            if (msgIn.Content == "")
+            if (msgIn.Content == "NotFound")
             {
                 result.Client_id = client_id;
                 result.BookName = bookName;
