@@ -96,54 +96,87 @@ namespace LibClient
                 Content = client_id.ToString(),
             };
 
+            #region connection
             //making connection with server
             IPEndPoint libServerEndpoint = new IPEndPoint(IPAddress.Loopback, 11111);
             Socket socket = new Socket(libServerEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             socket.Connect(libServerEndpoint);
+            #endregion
 
+            #region Hello message
             //sending first message
+            Console.WriteLine(msgOut.Type);
             socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
-            Console.WriteLine("Sending first message to server");
+            Console.WriteLine("Sending first message to server\n");
 
             //receiving first message from server
             int b = socket.Receive(buffer);
             msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
-            Console.WriteLine("receiving welcome from server");
+            Console.WriteLine("receiving welcome from server\n");
+            #endregion
 
+
+            //end communications
+            if (client_id == "Client -1")
+            {
+                //send message to close everything
+                Console.WriteLine("THE END OF THE WORLD IS HERE") ;
+                msgOut.Type = MessageType.EndCommunication;
+                msgOut.Content = "";
+                socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+
+                //receive message to close socket
+                b = socket.Receive(buffer);
+                msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
+                Console.WriteLine("Closing socket::Server");
+                socket.Close();
+                Console.WriteLine("program finished\n");
+                Console.ReadKey();
+                return result;
+            }
+            
+            #region bookinquiry
             //sending bookinquiry
             msgOut.Type = MessageType.BookInquiry;
             msgOut.Content = bookName;
             socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
-            Console.WriteLine("Sending first inquiry to server");
+            Console.WriteLine("Sending bookinquiry to server\n");
 
             //receiving bookinfo from server
             b = socket.Receive(buffer);
             msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
-            Console.WriteLine("Receiving information from server");
+            Console.WriteLine("Receiving bookinquiryReply from server\n");
             
             //when no book was found
             if (msgIn.Type == MessageType.NotFound)
             {
+                Console.WriteLine("Book not found\n");
+                socket.Close();
                 result.Client_id = client_id;
                 result.BookName = bookName;
                 result.Status = "NotFound";
                 result.BorrowerName = null;
                 result.BorrowerEmail = null;
+                Console.ReadKey();
                 return result;
             }
             
             BookData bookData = JsonSerializer.Deserialize<BookData>(msgIn.Content);
-            Console.WriteLine(bookData.Status);
+            Console.WriteLine($"{bookData.Status}\n");
+            #endregion
 
+            #region userinquiry
             //when the book is availible
-            if (bookData.Status == "Availible")
+            if (bookData.Status == "Available")
             {
+                socket.Close();
                 result.Client_id = client_id;
                 result.BookName = bookData.Title;
                 result.Status = bookData.Status;
                 result.BorrowerName = null;
                 result.BorrowerEmail = null;
                 Console.WriteLine($"{client_id}\n{bookData.Title}\n{bookData.Status}\n{result.BorrowerName}\n{result.BorrowerEmail}");
+                Console.WriteLine("press key to continue\n");
                 Console.ReadKey();
                 return result;
             }
@@ -151,12 +184,15 @@ namespace LibClient
             //when the book is borrowed
             if (bookData.Status == "Borrowed")
             {
+                Console.WriteLine("sending userinquiry to server\n");
                 //sending userID to the server
                 msgOut.Type = MessageType.UserInquiry;
                 msgOut.Content = bookData.BorrowedBy;
+                Console.WriteLine($"{msgOut.Content}\n");
                 socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
 
                 //receiving user-information to client
+                Console.WriteLine("receiving userinquiryReply from server");
                 b = socket.Receive(buffer);
                 msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
                 UserData userData = JsonSerializer.Deserialize<UserData>(msgIn.Content);
@@ -167,25 +203,13 @@ namespace LibClient
                 result.BorrowerName = userData.Name;
                 result.BorrowerEmail = userData.Email;
                 Console.WriteLine($"{client_id}\n{bookData.Title}\n{bookData.Status}\n{result.BorrowerName}\n{result.BorrowerEmail}");
+                Console.WriteLine("press key to continue\n");
                 Console.ReadKey();
                 return result;
             }
-            
-            //end communications
-            if (Convert.ToInt32(client_id) == -1)
-            {
-                msgOut.Type = MessageType.EndCommunication;
-                msgOut.Content = "";
-                socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
-
-                b = socket.Receive(buffer);
-                msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
-                Console.WriteLine("Closing socket::Server");
-                socket.Close();
-            }
+            #endregion
 
             return result;
         }
-
     }
 }

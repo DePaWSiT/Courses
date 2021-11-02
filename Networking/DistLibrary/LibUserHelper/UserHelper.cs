@@ -59,11 +59,11 @@ namespace UserHelper
                 int b = libServerSocket.Receive(buffer);
                 msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
                 Console.WriteLine("Receiving inquiry from server");
-
                 if (msgIn.Type == MessageType.EndCommunication)
                 {
                     Console.WriteLine("Goodbye");
                     socket.Close();
+                    break;
                 }
                 else
                 {
@@ -75,16 +75,16 @@ namespace UserHelper
                             msgOut.Type = MessageType.UserInquiryReply;
                             msgOut.Content = JsonSerializer.Serialize(usersContent[i]);
                             userFound = true;
-                            socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+                            libServerSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
                             Console.WriteLine("User found, send to server");
                             break;
                         }
                     }
-                    if (userFound)
+                    if (!userFound)
                     {
                         msgOut.Type = MessageType.NotFound;
-                        msgOut.Content = "NotFound";
-                        socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+                        msgOut.Content = JsonSerializer.Serialize(new UserData());
+                        libServerSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
                         Console.WriteLine("User NOT found, send to server");
                     }
                 }

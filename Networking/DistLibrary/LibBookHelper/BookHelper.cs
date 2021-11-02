@@ -66,6 +66,7 @@ namespace BookHelper
                 {
                     Console.WriteLine("Goodbye");
                     socket.Close();
+                    break;
                 }
                 else
                 {
@@ -78,10 +79,10 @@ namespace BookHelper
                         {
                             msgOut.Type = MessageType.BookInquiryReply;
                             msgOut.Content = JsonSerializer.Serialize(bookContent[i]);
+                            Console.WriteLine(msgOut.Content);
                             libServerSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
 
                             bookFound = true;
-                            Console.WriteLine(bookFound);
                             break;
                         }
                     }
@@ -89,8 +90,9 @@ namespace BookHelper
                     if (!bookFound)
                     {
                         msgOut.Type = MessageType.NotFound;
-                        msgOut.Content = "NotFound";
+                        msgOut.Content = JsonSerializer.Serialize(new BookData());
                         libServerSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+                        Console.WriteLine("Book NOT found, send to server");
                     }
                 }
             }
