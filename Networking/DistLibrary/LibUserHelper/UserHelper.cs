@@ -38,10 +38,10 @@ namespace UserHelper
             Message msgOut = new Message();
 
             //opens and stores Users from Users.json
-            List<UserData> usersContent = JsonSerializer.Deserialize<List<UserData>>(File.ReadAllText(@"Users.json"));
+            List<UserData> usersContent = JsonSerializer.Deserialize<List<UserData>>(File.ReadAllText(@"UsersData.json"));
             
             //makes socket
-            IPEndPoint userHelperEndpoint = new IPEndPoint(IPAddress.Loopback, 11113);
+            IPEndPoint userHelperEndpoint = new IPEndPoint(IPAddress.Parse(settings.UserHelperIPAddress), settings.UserHelperPortNumber);
             Socket socket = new Socket(userHelperEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
             //binds socket and puts it in listen state
@@ -50,7 +50,7 @@ namespace UserHelper
             Console.WriteLine("Waiting for connection::UserHelper");
 
             Socket libServerSocket = socket.Accept();
-            Console.WriteLine("Connection accepted");
+            Console.WriteLine("Connection accepted\n");
             
 
             while (true)
@@ -59,6 +59,8 @@ namespace UserHelper
                 int b = libServerSocket.Receive(buffer);
                 msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
                 Console.WriteLine("Receiving inquiry from server");
+
+                //close socket when server says to do so
                 if (msgIn.Type == MessageType.EndCommunication)
                 {
                     Console.WriteLine("Goodbye");
@@ -74,9 +76,10 @@ namespace UserHelper
                         {
                             msgOut.Type = MessageType.UserInquiryReply;
                             msgOut.Content = JsonSerializer.Serialize(usersContent[i]);
-                            userFound = true;
                             libServerSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
-                            Console.WriteLine("User found, send to server");
+                            Console.WriteLine("User found, send to server\n");
+                            
+                            userFound = true;
                             break;
                         }
                     }
@@ -85,7 +88,7 @@ namespace UserHelper
                         msgOut.Type = MessageType.NotFound;
                         msgOut.Content = JsonSerializer.Serialize(new UserData());
                         libServerSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
-                        Console.WriteLine("User NOT found, send to server");
+                        Console.WriteLine("User NOT found, send to server\n");
                     }
                 }
             }

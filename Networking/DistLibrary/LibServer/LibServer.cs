@@ -33,23 +33,22 @@ namespace LibServer
         {
             Setting settings = JsonSerializer.Deserialize<Setting>(File.ReadAllText(@"../ClientServerConfig.json"));
 
-
-            IPEndPoint userHelperEndpoint = new IPEndPoint(IPAddress.Loopback, 11113);
-            IPEndPoint bookHelperEndpoint = new IPEndPoint(IPAddress.Loopback, 11112);
-            IPEndPoint libServerEndpoint = new IPEndPoint(IPAddress.Loopback, 11111);
+            IPEndPoint userHelperEndpoint = new IPEndPoint(IPAddress.Parse(settings.UserHelperIPAddress), settings.UserHelperPortNumber);
+            IPEndPoint bookHelperEndpoint = new IPEndPoint(IPAddress.Parse(settings.BookHelperIPAddress), settings.BookHelperPortNumber);
+            IPEndPoint libServerEndpoint = new IPEndPoint(IPAddress.Parse(settings.ServerIPAddress), settings.ServerPortNumber);
             Socket libSocket = new Socket(libServerEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             
             #region Connections
             //connecting with the user helper
             Socket UHSocket = new Socket(libServerEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             UHSocket.Connect(userHelperEndpoint);
-            Console.WriteLine("Now connected to helper server:User");
+            Console.WriteLine("Now connected to UserHelper");
 
             
             //connecting with the book helper
             Socket BHSocket = new Socket(libServerEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             BHSocket.Connect(bookHelperEndpoint);
-            Console.WriteLine("Now connected to helper server:Book");
+            Console.WriteLine("Now connected to BookHelper");
             #endregion
 
             #region Variables
@@ -63,8 +62,8 @@ namespace LibServer
 
             while (true)
             {
-                libSocket.Listen(5);
-                Console.WriteLine("Waiting for connection::LibServer\n");
+                libSocket.Listen(settings.ServerListeningQueue);
+                Console.WriteLine("Waiting for connection::LibServer");
 
                 //accept connection from client
                 Socket clientSocket = libSocket.Accept();
@@ -73,15 +72,14 @@ namespace LibServer
                 do
                 {
                     //receiving first message from client
-                    Console.WriteLine("waiting for message\n");
+                    Console.WriteLine("waiting for inquiry\n");
                     int b = clientSocket.Receive(buffer);
                     msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
-                    Console.WriteLine("message received\n");
 
                     //receiving first message
                     if (msgIn.Type == MessageType.Hello)
                     {
-                        Console.WriteLine("receiving first message from client\n");
+                        Console.WriteLine("receiving first message from client");
 
                         //send welcome message to client
                         msgOut.Type = MessageType.Welcome;
@@ -91,29 +89,26 @@ namespace LibServer
                         Console.WriteLine("sending back welcome message\n");
                     }
 
-
-
                     //forwarding book request to bookHelperServer
                     if (msgIn.Type == MessageType.BookInquiry)
                     {
                         Forwarding(BHSocket, msgIn, buffer);
-                        Console.WriteLine("forwarding book inquiry to book helper\n");
+                        Console.WriteLine("forwarding book inquiry to book helper");
 
                         //repacking message from bookHelper and sending to client
-                        //Forwarding(BHSocket, clientSocket, buffer);
                         b = BHSocket.Receive(buffer);
                         msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
                         BookData bookContent = JsonSerializer.Deserialize<BookData>(msgIn.Content);
                         if (bookContent.Status != "Borrowed")
                         {
-                            Console.WriteLine("forwarding bookinquiryReply with break\n");
+                            Console.WriteLine("forwarding bookinquiryReply\n");
                             Forwarding(clientSocket, msgIn, buffer);
                             clientSocket.Close();
                             break;
                         }
                         else
                         {
-                            Console.WriteLine("forwarding bookinquiryReply without break\n");
+                            Console.WriteLine("forwarding bookinquiryReply\n");
                             Forwarding(clientSocket, msgIn, buffer);
                         }
                     }
@@ -123,7 +118,7 @@ namespace LibServer
                     {
                         //repacking message and forwarding to userhelper
                         Forwarding(UHSocket, msgIn, buffer);
-                        Console.WriteLine("forwarding userID to userhelper\n");
+                        Console.WriteLine("forwarding userID to userhelper");
 
                         //repacking message from userHelpler and sending to client
                         Forwarding(UHSocket, clientSocket, buffer);
@@ -145,7 +140,6 @@ namespace LibServer
                     UHSocket.Close();
                     clientSocket.Close();
                     libSocket.Close();
-                    Console.ReadKey();
                     break;
                 }
             }
@@ -160,15 +154,17 @@ namespace LibServer
         /// <param name="buffer">the buffer thats going to be used to send</param>
         private void Forwarding(Socket origin, Socket destination, byte[] buffer)
         {
+            //receive and deserialize message
             int b = origin.Receive(buffer);
             Message msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
             
+            //repack new message with content from incoming message
             Message msgOut = new Message()
             {
                 Type = msgIn.Type,
                 Content = msgIn.Content
             };
-            Console.WriteLine($"Forwarding::{msgIn.Type} ,{msgOut.Content}");
+            //send message to destination
             destination.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
         }
 
@@ -180,12 +176,13 @@ namespace LibServer
         /// <param name="buffer">the buffer thats going to be used to send</param>
         private void Forwarding(Socket destination, Message msgIn, byte[] buffer)
         {
+            //pack new message with same content from incoming message
             Message msgOut = new Message()
             {
                 Type = msgIn.Type,
                 Content = msgIn.Content
             };
-            Console.WriteLine($"Forwarding::{msgIn.Type} ,{msgOut.Content}");
+            //send message to destination
             destination.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
             
         }

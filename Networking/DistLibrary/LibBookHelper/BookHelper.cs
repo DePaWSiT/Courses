@@ -37,23 +37,20 @@ namespace BookHelper
             Message msgIn = new Message();
             Message msgOut = new Message();
 
-            msgIn.Type = MessageType.Hello;
-            msgIn.Content = "dankus memecus";
-
             //opens and stores Books from Books.json
-            List<BookData> bookContent = JsonSerializer.Deserialize<List<BookData>>(File.ReadAllText(@"Books.json"));
+            List<BookData> bookContent = JsonSerializer.Deserialize<List<BookData>>(File.ReadAllText(@"BooksData.json"));
 
             //makes socket
-            IPEndPoint bookHelperEndpoint = new IPEndPoint(IPAddress.Loopback, 11112);
+            IPEndPoint bookHelperEndpoint = new IPEndPoint(IPAddress.Parse(settings.BookHelperIPAddress), settings.BookHelperPortNumber);
             Socket socket = new Socket(bookHelperEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
             //binds socket and puts it in listening state
             socket.Bind(bookHelperEndpoint);
             socket.Listen(5);
-            Console.WriteLine("Waiting for connection::bookHelper");
-
+            Console.WriteLine("Waiting for connection::BookHelper");
+            
             Socket libServerSocket = socket.Accept();
-            Console.WriteLine("Connection accepted");
+            Console.WriteLine("Connection accepted\n");
 
             while (true)
             {
@@ -62,6 +59,7 @@ namespace BookHelper
                 msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
                 Console.WriteLine("Receiving inquiry from server");
 
+                //close socket when server says to do so
                 if (msgIn.Type == MessageType.EndCommunication)
                 {
                     Console.WriteLine("Goodbye");
@@ -79,8 +77,8 @@ namespace BookHelper
                         {
                             msgOut.Type = MessageType.BookInquiryReply;
                             msgOut.Content = JsonSerializer.Serialize(bookContent[i]);
-                            Console.WriteLine(msgOut.Content);
                             libServerSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
+                            Console.WriteLine("Book found, send to server\n");
 
                             bookFound = true;
                             break;
@@ -92,7 +90,7 @@ namespace BookHelper
                         msgOut.Type = MessageType.NotFound;
                         msgOut.Content = JsonSerializer.Serialize(new BookData());
                         libServerSocket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
-                        Console.WriteLine("Book NOT found, send to server");
+                        Console.WriteLine("Book NOT found, send to server\n");
                     }
                 }
             }

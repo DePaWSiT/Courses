@@ -85,8 +85,6 @@ namespace LibClient
             // todo: implement the body to communicate with the server and requests the book. Return the result as an Output object.
             // Adding extra methods to the class is permitted. The signature of this method must not change.
             Setting settings = JsonSerializer.Deserialize<Setting>(File.ReadAllText(@"../ClientServerConfig.json"));
-            
-            Console.WriteLine($"{client_id} {bookName}");
 
             byte[] buffer = new byte[1000];
             Message msgIn = new Message();
@@ -98,14 +96,13 @@ namespace LibClient
 
             #region connection
             //making connection with server
-            IPEndPoint libServerEndpoint = new IPEndPoint(IPAddress.Loopback, 11111);
+            IPEndPoint libServerEndpoint = new IPEndPoint(IPAddress.Parse(settings.ServerIPAddress), settings.ServerPortNumber);
             Socket socket = new Socket(libServerEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             socket.Connect(libServerEndpoint);
             #endregion
 
             #region Hello message
             //sending first message
-            Console.WriteLine(msgOut.Type);
             socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
             Console.WriteLine("Sending first message to server\n");
 
@@ -120,7 +117,7 @@ namespace LibClient
             if (client_id == "Client -1")
             {
                 //send message to close everything
-                Console.WriteLine("THE END OF THE WORLD IS HERE") ;
+                Console.WriteLine("Closing Connections") ;
                 msgOut.Type = MessageType.EndCommunication;
                 msgOut.Content = "";
                 socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
@@ -131,7 +128,6 @@ namespace LibClient
                 Console.WriteLine("Closing socket::Server");
                 socket.Close();
                 Console.WriteLine("program finished\n");
-                Console.ReadKey();
                 return result;
             }
             
@@ -140,7 +136,7 @@ namespace LibClient
             msgOut.Type = MessageType.BookInquiry;
             msgOut.Content = bookName;
             socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
-            Console.WriteLine("Sending bookinquiry to server\n");
+            Console.WriteLine("Sending bookinquiry to server");
 
             //receiving bookinfo from server
             b = socket.Receive(buffer);
@@ -157,12 +153,10 @@ namespace LibClient
                 result.Status = "NotFound";
                 result.BorrowerName = null;
                 result.BorrowerEmail = null;
-                Console.ReadKey();
                 return result;
             }
             
             BookData bookData = JsonSerializer.Deserialize<BookData>(msgIn.Content);
-            Console.WriteLine($"{bookData.Status}\n");
             #endregion
 
             #region userinquiry
@@ -175,24 +169,20 @@ namespace LibClient
                 result.Status = bookData.Status;
                 result.BorrowerName = null;
                 result.BorrowerEmail = null;
-                Console.WriteLine($"{client_id}\n{bookData.Title}\n{bookData.Status}\n{result.BorrowerName}\n{result.BorrowerEmail}");
-                Console.WriteLine("press key to continue\n");
-                Console.ReadKey();
                 return result;
             }
 
             //when the book is borrowed
             if (bookData.Status == "Borrowed")
             {
-                Console.WriteLine("sending userinquiry to server\n");
+                Console.WriteLine("sending userinquiry to server");
                 //sending userID to the server
                 msgOut.Type = MessageType.UserInquiry;
                 msgOut.Content = bookData.BorrowedBy;
-                Console.WriteLine($"{msgOut.Content}\n");
                 socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize(msgOut)));
 
                 //receiving user-information to client
-                Console.WriteLine("receiving userinquiryReply from server");
+                Console.WriteLine("receiving userinquiryReply from server\n");
                 b = socket.Receive(buffer);
                 msgIn = JsonSerializer.Deserialize<Message>(Encoding.ASCII.GetString(buffer, 0, b));
                 UserData userData = JsonSerializer.Deserialize<UserData>(msgIn.Content);
@@ -202,9 +192,6 @@ namespace LibClient
                 result.Status = bookData.Status;
                 result.BorrowerName = userData.Name;
                 result.BorrowerEmail = userData.Email;
-                Console.WriteLine($"{client_id}\n{bookData.Title}\n{bookData.Status}\n{result.BorrowerName}\n{result.BorrowerEmail}");
-                Console.WriteLine("press key to continue\n");
-                Console.ReadKey();
                 return result;
             }
             #endregion

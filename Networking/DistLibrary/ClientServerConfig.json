@@ -1,5 +1,6 @@
 ﻿{
-    "ServerPortNumber": 11111,
+    "Comment" : "Simon Prinsen 0949545",
+	"ServerPortNumber": 11111,
     "BookHelperPortNumber": 11112,
     "UserHelperPortNumber": 11113,
     "ServerIPAddress": "127.0.0.1",
