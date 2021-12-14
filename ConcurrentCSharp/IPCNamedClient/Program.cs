@@ -1,5 +1,5 @@
-﻿using Exercise;
-//using Solution;
+﻿//using Exercise;
+using Solution;
 
 
 namespace Program
@@ -8,13 +8,11 @@ namespace Program
     {
         static void Main(string[] args)
         {
-            new IPCNamedClient().ipcClientCommunicate();
+            //new IPCNamedClient().ipcClientCommunicate();
 
-             //SolutionIPCNamedClient client = new SolutionIPCNamedClient("MessageReversePipe");
-             //client.prepareClient();
-             //client.communicate();
-            
-
+             SolutionIPCNamedClient client = new SolutionIPCNamedClient("MessageReversePipe");
+             client.prepareClient();
+             client.communicate();
         }
     }
 }

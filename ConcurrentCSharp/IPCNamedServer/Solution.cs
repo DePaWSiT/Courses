@@ -15,7 +15,7 @@ namespace Solution
         StreamReader clientReader;
         StreamWriter clientWriter;
 
-        public SolutionIPCNamedServer(String pipeName)
+        public SolutionIPCNamedServer(string pipeName)
         {
             client = new NamedPipeClientStream(pipeName);
         }
@@ -33,8 +33,8 @@ namespace Solution
         {
             while (true)
             { 
-                String input = Console.ReadLine();
-                if (String.IsNullOrEmpty(input))
+                string input = Console.ReadLine();
+                if (string.IsNullOrEmpty(input))
                 {
                     Console.WriteLine("[Server] Program is being terminated.");
                     break;
@@ -43,7 +43,7 @@ namespace Solution
                 {
                     clientWriter.WriteLine(input);
                     clientWriter.Flush();
-                    String clientMsg = clientReader.ReadLine();
+                    string clientMsg = clientReader.ReadLine();
                     Console.WriteLine(clientMsg);
 
                 }

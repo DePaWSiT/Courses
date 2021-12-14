@@ -113,8 +113,8 @@ namespace Exercise
 
             //this.createOneThread();
 
-            this.createTwoXYThreads();
-            //this.createMultipleThreads();
+            //this.createTwoXYThreads();
+            this.createMultipleThreads();
         }
     }
 }
