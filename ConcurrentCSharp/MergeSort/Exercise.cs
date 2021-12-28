@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 
 namespace Exercise
 {
@@ -13,7 +12,7 @@ namespace Exercise
             Array.Copy(data, input, data.Length);
         }
 
-        public void printContent(String msg)
+        public void printContent(string msg)
         {
             Console.WriteLine(msg+"Content of the array is:");
             for (int i = 0; i < input.Length; i++)

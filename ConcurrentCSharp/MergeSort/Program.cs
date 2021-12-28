@@ -11,18 +11,18 @@ namespace Program
         static void Main(string[] args)
         {
             int[] arr = { 1, 5, 4, 11, 20, 8, 2, 98, 90, 16, 3 , 100, 83, 24, 18, 33, 44, 76 };
-
+            int[] arr2 = { 5, 3, 4, 2, 1 };
             
-            SequentialMergeSort mergeSort = new SequentialMergeSort(arr);
+            SequentialMergeSort mergeSort = new SequentialMergeSort(arr2);
 
             mergeSort.printContent("\n Before the sequential merge-sort \n");
-            mergeSort.sortSeq(0, arr.Length - 1);
+            mergeSort.sortSeq(0, arr2.Length - 1);
             mergeSort.printContent("\n After the sequential merge-sort \n");
 
             // uncomment this only if the solution is available
-            Console.WriteLine("\n Now concurrent sort will be running ...\n");
-            SolutionConcurrentMergeSort concMergeSort = new SolutionConcurrentMergeSort();
-            concMergeSort.sortCon(arr);
+            //Console.WriteLine("\n Now concurrent sort will be running ...\n");
+            //SolutionConcurrentMergeSort concMergeSort = new SolutionConcurrentMergeSort();
+            //concMergeSort.sortCon(arr);
 
         }
     }

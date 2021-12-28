@@ -62,7 +62,16 @@ namespace Example
 
         public void printIdByName()
         {
-            // todo: Implement the body of this method that gets an input for a process name and prints corresponding id
+            // todo: Implement the body of this method that gets an input for a process name and prints corresponding id\
+            
+        }
+        public void startProcess()
+        {
+            Process process = new Process();
+            process.StartInfo.UseShellExecute = true;
+            process.StartInfo.Verb = "runas";
+            process.StartInfo.FileName = "C:/Program Files/Genshin Impact/launcher.exe";
+            process.Start();
         }
     }
 }
