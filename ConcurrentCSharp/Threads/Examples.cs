@@ -1,14 +1,12 @@
-﻿
-
-namespace Exercise
+﻿namespace Exercise
 {
     public class Examples
     {
         public void runExamples()
         {
             ThreadsList tl = new ThreadsList();
-            // todo 1: uncomment this and check the execution
-//            tl.runExample();
+            // todo 1: uncomment this and check the execution, prints a list of current threads
+            //tl.runExample();
 
             ThreadCreation tc = new ThreadCreation();
             // todo 2: uncomment this and check the execution
@@ -16,7 +14,7 @@ namespace Exercise
 
             ThreadsJoin tj = new ThreadsJoin(2000);
             // todo 3: uncomment this and check the execution 
-//            tj.runExample();
+            //tj.runExample();
         }
     }
 }

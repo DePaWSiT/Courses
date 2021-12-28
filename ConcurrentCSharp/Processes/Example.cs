@@ -62,16 +62,35 @@ namespace Example
 
         public void printIdByName()
         {
-            // todo: Implement the body of this method that gets an input for a process name and prints corresponding id\
-            
-        }
-        public void startProcess()
-        {
-            Process process = new Process();
-            process.StartInfo.UseShellExecute = true;
-            process.StartInfo.Verb = "runas";
-            process.StartInfo.FileName = "C:/Program Files/Genshin Impact/launcher.exe";
-            process.Start();
+            Process[] currentProc = Process.GetProcesses();
+
+            foreach (Process process in currentProc)
+            {
+                Console.WriteLine($"Name: {process.ProcessName}   ID: {process.Id}");
+            }
+
+            bool stop = false;
+            while (!stop)
+            {
+                
+                Console.WriteLine("give me the name of a process and i will give you the ID or type \"stop\" to cancel");
+                string input = Console.ReadLine();
+
+                if (input == "stop")
+                {
+                    stop = true;
+                }
+                else
+                {
+                    foreach (Process process in currentProc)
+                    {
+                        if (process.ProcessName == input)
+                        {
+                            Console.WriteLine($"the process you requested has ID: {process.Id}");
+                        }
+                    }                 
+                }
+            }
         }
     }
 }
